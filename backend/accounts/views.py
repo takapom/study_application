@@ -1,4 +1,4 @@
-# accounts/views.py
+#APIViewを使うとことによってCRUD処理を簡単に可能
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,11 +6,12 @@ from .models import SimpleUser, SubjectStudy
 
 class LoginView(APIView):
     def post(self, request):
+        username = request.data.get('username')
         email = request.data.get('email')
         password = request.data.get('password')
 
         try:
-            user = SimpleUser.objects.get(email=email, password=password)
+            user = SimpleUser.objects.get(email=email, password=password, username=username)
             return Response({
                 'success': True,
                 'user_id': user.id  # ユーザーIDをレスポンスに含める
@@ -67,3 +68,37 @@ class UserStudyInfo(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
+#みんなの掲示板ページ処理
+class Dashboard(APIView):
+    def get(self, request):
+        try:
+            studyrecords = SubjectStudy.objects.all()
+            #取得したテーブルから欲しいものだけを取得する(for文でまわす)
+            study_dashboard = []
+            for record in studyrecords:
+                  study_dashboard.append({
+                    'id': record.id,
+                    'username': record.username,
+                     'subject': record.subject,
+                     'study_time': record.study_time,
+                     'study_content': record.study_content,
+                     'study_date': record.study_date,
+                     'created_at': record.created_at,
+                     'updated_at': record.updated_at
+                  })
+
+            return Response({
+                      'success': True,
+                      'record': study_dashboard,
+                  }, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+             return Response(
+                 {'error': str(e)},
+                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+                
+
+
+            

@@ -8,18 +8,20 @@ import styles from '@/styles/LoginForm.module.css'
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleLogin = async () => {
     setIsLoading(true)
     try {
+      console.log(email, password, username)
       const res = await fetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       })
 
       const data = await res.json()
@@ -32,7 +34,7 @@ export default function LoginForm() {
         router.push('/dashboard')
       } else {
         console.error('ログイン失敗:', data.message || 'エラーが発生しました')
-        alert(data.message || 'ログインに失敗しました')
+        alert(data.message || 'ログインに失敗しました。ユーザーネーム、メールアドレス、パスワードを確認してください。')
       }
     } catch (error) {
       console.error('エラーが発生しました:', error)
@@ -44,6 +46,17 @@ export default function LoginForm() {
 
   return (
     <form className={styles.form} onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+       <div className={styles.formGroup}>
+        <label className={styles.label}>ユーザーネーム</label>
+        <input
+          type="username"
+          className={styles.input}
+          placeholder="Taro"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+      </div>
       <div className={styles.formGroup}>
         <label className={styles.label}>メールアドレス</label>
         <input

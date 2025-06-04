@@ -12,6 +12,17 @@ export default function CreatePage() {
     studyContent: ""
   })
 
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  // try {
+  //   const res = await fetch('http://127.0.0.1:8000/api/login/', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ email, password, username }),
+  //   })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: APIを呼び出してデータを保存
