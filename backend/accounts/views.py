@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import SimpleUser, SubjectStudy
+from .serializers import SubjectStudySerializer
+from rest_framework.generics import CreateAPIView
 
 class LoginView(APIView):
     def post(self, request):
@@ -26,7 +28,7 @@ class LogoutView(APIView):
         return Response({'message': 'ログアウトしました'}, status=status.HTTP_200_OK)
     
 
-#ユーザーの勉強情報を表示処理
+#ユーザーの勉強情報を表示処理(シリアライザー未使用)
 class UserStudyInfo(APIView):
     def get(self, request):
         #成功した時の処理定義
@@ -69,7 +71,7 @@ class UserStudyInfo(APIView):
             )
 
 
-#みんなの掲示板ページ処理
+#みんなの掲示板ページ処理(シリアライザー未使用)
 class Dashboard(APIView):
     def get(self, request):
         try:
@@ -99,6 +101,13 @@ class Dashboard(APIView):
                  status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
                 
+
+#勉強記録追加クラス(シリアライザー活用し始め)
+class CreateStudy(CreateAPIView):
+    queryset = SubjectStudy.objects.all()
+    serializer_class = SubjectStudySerializer
+
+
 
 
             

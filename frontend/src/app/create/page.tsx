@@ -1,31 +1,48 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./page.module.css"
 
+// 型定義
+interface StudyRecord {
+  subject: string;
+  study_time: number;
+  study_content: string;
+  study_date: string | number;
+  user: string | number;
+}
+
 export default function CreatePage() {
   const router = useRouter()
-  const [formData, setFormData] = useState({
+  // fetch結果を格納
+  const [formData, setFormData] = useState<StudyRecord>({
     subject: "",
-    studyTime: "",
-    studyContent: ""
-  })
+    study_time: 0,
+    study_content: "",
+    study_date: "",
+    user: 1,
+  });
 
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  // try {
-  //   const res = await fetch('http://127.0.0.1:8000/api/login/', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ email, password, username }),
-  //   })
+  // fetchして勉強記録を追加できるようにする
+  const createStudy = async () => {
+    const res = await fetch("http://localhost:8000/api/create-records/", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+    if (!res.ok) {
+      throw new Error("保存に失敗しました！")
+    }
+    const data = await res.json()
+    console.log(data)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: APIを呼び出してデータを保存
+    await createStudy()
     router.push("/dashboard")
   }
 
@@ -33,7 +50,7 @@ export default function CreatePage() {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === "study_time" ? Number(value) : value
     }))
   }
 
@@ -59,8 +76,8 @@ export default function CreatePage() {
             <input
               type="number"
               id="studyTime"
-              name="studyTime"
-              value={formData.studyTime}
+              name="study_time"
+              value={formData.study_time}
               onChange={handleChange}
               required
             />
@@ -70,8 +87,20 @@ export default function CreatePage() {
             <label htmlFor="studyContent">勉強内容</label>
             <textarea
               id="studyContent"
-              name="studyContent"
-              value={formData.studyContent}
+              name="study_content"
+              value={formData.study_content}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="studyDate">勉強日</label>
+            <input
+              type="date"
+              id="studyDate"
+              name="study_date"
+              value={formData.study_date}
               onChange={handleChange}
               required
             />
@@ -93,4 +122,4 @@ export default function CreatePage() {
       </div>
     </div>
   )
-} 
+}
